@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Responsividade (Telas de Celular)
+   ========================================================================== */
+@media (max-width: 576px) {
+    .header-top-icons i {
+        font-size: 1.3rem;
+    }
+
+    .logo-container img {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .logo-container {
+        top: 20px;
+    }
+
+    .header-compact {
+        height: 100px;
+    }
+
+    .main-container {
+        padding-top: 30px;
+    }
+    
+    .cart-icon-fixed {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+    }
+    .cart-icon-fixed i {
+        font-size: 1.5rem;
+    }
+
+    .product-info { padding: 0.8rem; }
+    .product-info h3 { font-size: 0.9rem; }
+    .product-info .description { font-size: 0.75rem; }
+    .price .current-price { font-size: 1.2rem; }
+
+
+}
+
+@media (max-width: 767.98px) {
+.product-card .card-img-top {
+max-height: 190x; /* Ajuste este valor conforme sua preferência */
+object-fit: cover; /* Mantém a proporção e cobre o espaço */
+
+
+
+}
+}

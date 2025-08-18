@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Variáveis de Cor e Estilos Globais
+   ========================================================================== */
+:root {
+    --primary-color: #4D2480;
+    --primary-color-light: #C4A2E4;
+    --accent-color: #84C229;
+    --whatsapp-color: #25D366;
+    --background-color: #f8f9fa;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    display: flex; flex-direction: column; min-height: 100vh;
+}
+
+main { flex: 1; }
+
+/* ==========================================================================
+   Carrinho Fixo
+   ========================================================================== */
+.cart-icon-fixed {
+    position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+    background-color: var(--primary-color); color: white; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1050; text-decoration: none; transition: transform 0.2s ease-in-out;
+}
+.cart-icon-fixed:hover { transform: scale(1.1); color: white; }
+.cart-icon-fixed i { font-size: 1.8rem; }
+.cart-icon-fixed.pulse { animation: pulse-animation 0.5s ease-in-out; }
+@keyframes pulse-animation { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.cart-message {
+    position: absolute; bottom: 120%; right: 0; background-color: #343a40;
+    color: white; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem;
+    white-space: nowrap; opacity: 0; visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+.cart-message.show { opacity: 1; visibility: visible; }
+
+/* ==========================================================================
+   Header Compacto e Logo
+   ========================================================================== */
+.header-compact {
+    background: linear-gradient(90deg, var(--primary-color-light) 0%, var(--primary-color) 100%);
+    height: 70px; display: flex; align-items: center;
+    justify-content: flex-end; padding: 0 5%; position: relative;
+}
+.logo-container {
+    position: absolute; top: 10px; left: 50%;
+    transform: translateX(-50%); z-index: 10;
+}
+.logo-container img {
+    width: 100px; height: 100px; border: 4px solid white;
+    object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.header-top-icons { display: flex; align-items: center; gap: 20px; }
+.header-top-icons i {
+    font-size: 1.6rem; color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: transform 0.2s;
+}
+.header-top-icons i:hover { transform: scale(1.1); }
+
+
+/* ==========================================================================
+   Menu de Navegação (Com Quebra de Linha)
+   ========================================================================== */
+.main-container { padding-top: 50px; }
+
+.category-tabs {
+    position: sticky; top: 0; background-color: var(--background-color);
+    z-index: 1020; padding: 10px 0; margin-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6; display: flex;
+    justify-content: center; flex-wrap: wrap; gap: 10px;
+}
+.category-tabs.is-sticky { box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+.nav-tab {
+    padding: 0.5rem 1rem; color: #6c757d; font-weight: 600;
+    text-decoration: none; white-space: nowrap; border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.nav-tab:hover { color: var(--primary-color); }
+.nav-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+
+/* ==========================================================================
+   Títulos e Cards de Produtos
+   ========================================================================== */
+.category-title { color: var(--primary-color); font-weight: 700; text-align: center; margin-bottom: 1.5rem; scroll-margin-top: 150px; }
+.product-info h3 { color: var(--primary-color); font-weight: 600; }
+.price {display: flex; align-items: baseline; flex-wrap: nowrap;}
+.price .current-price { color: #343a40; }
+@keyframes shake-animation { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+.card.is-shaking { animation: shake-animation 0.4s ease-in-out; }
+
+/* ==========================================================================
+   Demais Estilos
+   ========================================================================== */
+.price-prefix { font-size: 0.9rem; color: #6c757d; font-weight: 400; margin-right: 0.25rem; align-self: center; }
+#modal-confirmation-overlay { padding: 2rem 1rem; border-top: 1px solid #dee2e6; }
+.btn-accent { background-color: var(--accent-color); color: white; font-weight: 600; }
+.btn-accent:hover { background-color: #72a824; color: white; }
+.btn-whatsapp { background-color: var(--whatsapp-color); color: white; font-weight: 600; }
+.btn-whatsapp:hover { background-color: #20b057; color: white; }
+.offcanvas-body { padding: 0; }
+.cart-item { padding: 1rem; }
+.cart-item:not(:last-child) { border-bottom: 1px solid #dee2e6; }
+.addon-error-message { color: #dc3545; font-size: 0.8rem; font-weight: 600; margin-top: 5px; text-align: left; }
+.dynamic-price { color: var(--accent-color); font-weight: 600; font-size: 0.9em; margin-left: 5px; }
+.cart-addon-price { color: #6c757d; font-size: 0.85em; font-weight: 500; }
+#delivery-form-fields { transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out; overflow: hidden; max-height: 1000px; }
+#delivery-form-fields.hidden { opacity: 0; max-height: 0; }
+.size-options .form-check-input { display: none; }
+.size-options .form-check-label { display: block; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 0.5rem 1rem; text-align: center; cursor: pointer; transition: background-color 0.2s, border-color 0.2s, color 0.2s; }
+.size-options .form-check-input:checked + .form-check-label { background-color: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: 600; }
+.size-options .size-price { font-size: 0.8rem; display: block; opacity: 0.8; }
+.footer { background-color: #e9ecef; border-top: 1px solid #dee2e6; }
+.footer-link { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+.footer-link:hover { color: #3a1b5e; text-decoration: underline; }
+
+#cart-total {
+  margin-right: 2rem;
+}
+
+/* ==========================================================================
+   Estilos do Card de Produto Clicável
+   ========================================================================== */
+/* Esconde o botão de ação que foi removido do HTML */
+.product-card .action-btn {
+    display: none;
+}
+
+/* Transforma o card inteiro em um elemento clicável com feedback visual */
+.product-card {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Espaçamento antes do rodapé */
+.main-container {
+    margin-bottom: 1rem;
+}
+
