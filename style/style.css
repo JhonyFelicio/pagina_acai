@@ -63,42 +63,138 @@ main { flex: 1; }
 }
 .header-top-icons i:hover { transform: scale(1.1); }
 
-
 /* ==========================================================================
-   Menu de Navegação (Com Quebra de Linha)
+   MENU DE NAVEGAÇÃO (ESTILO FIGMA)
    ========================================================================== */
 .main-container { padding-top: 50px; }
 
 .category-tabs {
-    position: sticky; top: 0; background-color: var(--background-color);
-    z-index: 1020; padding: 10px 0; margin-bottom: 1.5rem;
-    border-bottom: 1px solid #dee2e6; display: flex;
-    justify-content: center; flex-wrap: wrap; gap: 10px;
+    background-color: var(--background-color);
+    z-index: 1020;
+    padding: 10px 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
-.category-tabs.is-sticky { box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+.category-tabs.is-sticky { 
+    position: sticky;
+    top: 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+}
 
 .nav-tab {
-    padding: 0.5rem 1rem; color: #6c757d; font-weight: 600;
-    text-decoration: none; white-space: nowrap; border-bottom: 3px solid transparent;
+    padding: 0.5rem 1rem;
+    color: #6c757d;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
     transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
+
+.nav-tab i {
+    font-size: 1.2rem;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
 .nav-tab:hover { color: var(--primary-color); }
-.nav-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+.nav-tab:hover i { color: var(--primary-color); }
+
+.nav-tab.active { 
+    color: var(--primary-color); 
+    border-bottom-color: var(--primary-color); 
+    font-weight: 600; 
+}
+.nav-tab.active i { color: var(--primary-color); }
 
 /* ==========================================================================
-   Títulos e Cards de Produtos
+   CARDS DE PRODUTOS (LAYOUT HORIZONTAL - ESTILO FIGMA)
    ========================================================================== */
 .category-title { color: var(--primary-color); font-weight: 700; text-align: center; margin-bottom: 1.5rem; scroll-margin-top: 150px; }
-.product-info h3 { color: var(--primary-color); font-weight: 600; }
-.price {display: flex; align-items: baseline; flex-wrap: nowrap;}
-.price .current-price { color: #343a40; }
+
+.product-card-horizontal {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: 12px !important;
+    border: 1px solid #eee;
+    background-color: #fff;
+    overflow: hidden;
+}
+.product-card-horizontal:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.product-card-horizontal .img-fluid {
+    max-height: 90px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px !important;
+    padding: 8px;
+}
+
+.product-card-horizontal .card-body {
+    padding: 0.8rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ===== ESTILOS FINAIS E AJUSTÁVEIS PARA TEXTOS DO CARD ===== */
+.product-card-horizontal .card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #343a40;
+    margin-bottom: 0.25rem;
+}
+
+.product-card-horizontal .card-text {
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 400; /* Peso normal, sem negrito */
+    color: #6c757d;
+}
+
+.product-card-horizontal .price {
+    font-weight: 600; /* Aplica o negrito suave a toda a área do preço */
+    color: var(--primary-color);
+}
+
+.product-card-horizontal .price-prefix {
+    font-size: 0.8rem; /* Tamanho do "A partir de" */
+}
+
+/* ONDE AJUSTAR O TAMANHO DO VALOR (R$ 12,00): Altere o font-size aqui. */
+.product-card-horizontal .current-price {
+    font-size: 0.9rem; /* Pode diminuir para 0.85rem ou 0.8rem se preferir */
+}
+
+/* Garante que o negrito do Bootstrap não interfira */
+.product-card-horizontal .current-price.fw-bold {
+    font-weight: 600 !important;
+}
+
+
+/* ===== AJUSTE PARA DIMINUIR O ESPAÇAMENTO VERTICAL ===== */
+#product-grid-tradicionais,
+#product-grid-trufados,
+#product-grid-hotdogs,
+#product-grid-caldos {
+    --bs-gutter-y: 0.10rem; 
+}
+
 @keyframes shake-animation { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
 .card.is-shaking { animation: shake-animation 0.4s ease-in-out; }
 
 /* ==========================================================================
    Demais Estilos
    ========================================================================== */
-.price-prefix { font-size: 0.9rem; color: #6c757d; font-weight: 400; margin-right: 0.25rem; align-self: center; }
 #modal-confirmation-overlay { padding: 2rem 1rem; border-top: 1px solid #dee2e6; }
 .btn-accent { background-color: var(--accent-color); color: white; font-weight: 600; }
 .btn-accent:hover { background-color: #72a824; color: white; }
@@ -110,8 +206,19 @@ main { flex: 1; }
 .addon-error-message { color: #dc3545; font-size: 0.8rem; font-weight: 600; margin-top: 5px; text-align: left; }
 .dynamic-price { color: var(--accent-color); font-weight: 600; font-size: 0.9em; margin-left: 5px; }
 .cart-addon-price { color: #6c757d; font-size: 0.85em; font-weight: 500; }
-#delivery-form-fields { transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out; overflow: hidden; max-height: 1000px; }
-#delivery-form-fields.hidden { opacity: 0; max-height: 0; }
+
+#delivery-form-fields, #pickup-form-fields { 
+    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out; 
+    overflow: hidden; 
+    max-height: 1000px; 
+}
+#delivery-form-fields.hidden, #pickup-form-fields.hidden { 
+    opacity: 0; 
+    max-height: 0; 
+    padding: 0;
+    margin: 0;
+}
+
 .size-options .form-check-input { display: none; }
 .size-options .form-check-label { display: block; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 0.5rem 1rem; text-align: center; cursor: pointer; transition: background-color 0.2s, border-color 0.2s, color 0.2s; }
 .size-options .form-check-input:checked + .form-check-label { background-color: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: 600; }
@@ -119,32 +226,5 @@ main { flex: 1; }
 .footer { background-color: #e9ecef; border-top: 1px solid #dee2e6; }
 .footer-link { color: var(--primary-color); text-decoration: none; font-weight: 600; }
 .footer-link:hover { color: #3a1b5e; text-decoration: underline; }
-
-#cart-total {
-  margin-right: 2rem;
-}
-
-/* ==========================================================================
-   Estilos do Card de Produto Clicável
-   ========================================================================== */
-/* Esconde o botão de ação que foi removido do HTML */
-.product-card .action-btn {
-    display: none;
-}
-
-/* Transforma o card inteiro em um elemento clicável com feedback visual */
-.product-card {
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-/* Espaçamento antes do rodapé */
-.main-container {
-    margin-bottom: 1rem;
-}
-
+#cart-total { margin-right: 2rem; }
+.main-container { margin-bottom: 1rem; }

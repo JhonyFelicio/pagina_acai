@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartIconLink = document.getElementById('cart-icon-link');
     const generateWhatsAppBtn = document.getElementById('generate-whatsapp-btn');
     const deliveryForm = document.getElementById('delivery-form-fields');
+    const pickupForm = document.getElementById('pickup-form-fields'); // Campo de retirada
     const deliveryOptionRadios = document.querySelectorAll('input[name="deliveryOption"]');
     const cartItemsContainer = document.getElementById('cart-items');
     const checkoutBtn = document.getElementById('checkout-btn');
@@ -55,10 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         addToCartBtn: document.getElementById('add-to-cart-btn'),
     }, productModalInstance);
 
-
     // --- FUNÇÕES PRINCIPAIS DO APP ---
     
-    // Renderiza os produtos na tela
     function renderProducts() {
         gridTradicionais.innerHTML = '';
         gridTrufados.innerHTML = '';
@@ -70,19 +69,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             const cardCol = document.createElement('div');
-            cardCol.className = 'col-lg-3 col-md-4 col-6';
+            cardCol.className = 'col-12';
             
+            // A classe 'fs-5' foi removida da span .current-price para permitir o controlo via CSS
             const priceText = (product.customizationType === 'levanta' || product.customizationType === 'caldo')
-                ? `<span class="price-prefix">A partir de </span><span class="current-price fs-5 fw-bold">${Cart.formatCurrency(product.currentPrice)}</span>`
-                : `<span class="current-price fs-5 fw-bold">${Cart.formatCurrency(product.currentPrice)}</span>`;
+                ? `<span class="price-prefix">A partir de </span><span class="current-price fw-bold">${Cart.formatCurrency(product.currentPrice)}</span>`
+                : `<span class="current-price fw-bold">${Cart.formatCurrency(product.currentPrice)}</span>`;
             
             cardCol.innerHTML = `
-                <div class="card h-100 shadow-sm product-card" data-product-id="${product.id}">
-                    <img src="${product.image}" class="card-img-top" alt="${product.name}">
-                    <div class="card-body d-flex flex-column">
-                        <h3 class="card-title h6 fw-bold">${product.name}</h3>
-                        <p class="card-text small text-muted flex-grow-1">${product.description || ''}</p>
-                        <div class="price mb-2 d-flex align-items-baseline">${priceText}</div>
+                <div class="card product-card product-card-horizontal" data-product-id="${product.id}">
+                    <div class="row g-0">
+                        <div class="col-3 d-flex align-items-center justify-content-center">
+                            <img src="${product.image}" class="img-fluid rounded-start" alt="${product.name}">
+                        </div>
+                        <div class="col-9">
+                            <div class="card-body">
+                                <h3 class="card-title h6 fw-bold">${product.name}</h3>
+                                <p class="card-text small text-muted">${product.description || ''}</p>
+                                <div class="price mt-auto">${priceText}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>`;
 
@@ -95,101 +101,87 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => scrollSpy.refresh(), 500);
     }
     
-    // Gera a mensagem para o WhatsApp
-function generateWhatsAppMessage() {
-    const cart = Cart.getCart();
-    if (cart.length === 0) return;
+    function generateWhatsAppMessage() {
+        const cart = Cart.getCart();
+        if (cart.length === 0) return;
 
-    // Define a taxa de entrega
-    const deliveryFee = 4.00; 
+        const deliveryFee = 4.00; 
+        const deliveryOption = document.querySelector('input[name="deliveryOption"]:checked').value;
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        const orderNotes = document.getElementById('orderNotes').value.trim();
 
-    const deliveryOption = document.querySelector('input[name="deliveryOption"]:checked').value;
-    const customerName = document.getElementById('customerName').value.trim();
-    const paymentMethod = document.getElementById('paymentMethod').value;
-    const orderNotes = document.getElementById('orderNotes').value.trim();
+        let message = `Olá, *Açaí do Edy*! 👋 Gostaria de fazer o seguinte pedido:\n\n*RESUMO DO PEDIDO:*\n---------------------\n`;
+        cart.forEach((item, index) => {
+            message += `*Item ${index + 1}:* ${item.quantity}x (${item.name})\n`;
+            if (item.addons.length > 0) {
+                const addonsText = item.addons.map(addon => {
+                    return addon.price > 0 ? `${addon.name} (+ ${Cart.formatCurrency(addon.price)})` : addon.name;
+                }).join(', ');
+                message += `*Adicionais:* ${addonsText}\n`;
+            }
+            message += `*Subtotal Item:* ${Cart.formatCurrency(item.unitPrice * item.quantity)}\n---------------------\n`;
+        });
 
-    // VALIDAÇÃO E COLETA DOS DADOS DE ENTREGA
-    if (deliveryOption === 'delivery') {
-        const customerCep = document.getElementById('customerCep').value.trim();
-        const customerAddress = document.getElementById('customerAddress').value.trim();
-        const customerNumber = document.getElementById('customerNumber').value.trim();
+        const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+        const finalTotal = deliveryOption === 'delivery' ? subtotal + deliveryFee : subtotal;
 
-        if (!customerName || !customerAddress || !customerNumber || !customerCep) {
-            alert('Por favor, preencha todos os dados de entrega: nome, CEP, endereço e número.');
-            return;
+        message += `\n*Subtotal dos Itens:* ${Cart.formatCurrency(subtotal)}\n`;
+        if (deliveryOption === 'delivery') {
+            message += `*Taxa de Entrega:* ${Cart.formatCurrency(deliveryFee)}\n`;
         }
-    }
+        message += `*TOTAL DO PEDIDO:* *${Cart.formatCurrency(finalTotal)}*\n\n`;
 
-    let message = `Olá, *Açaí do Edy*! 👋 Gostaria de fazer o seguinte pedido:\n\n*RESUMO DO PEDIDO:*\n---------------------\n`;
-    cart.forEach((item, index) => {
-        message += `*Item ${index + 1}:* ${item.quantity}x (${item.name})\n`;
-        if (item.addons.length > 0) {
-            const addonsText = item.addons.map(addon => {
-                return addon.price > 0 ? `${addon.name} (+ ${Cart.formatCurrency(addon.price)})` : addon.name;
-            }).join(', ');
-            message += `*Adicionais:* ${addonsText}\n`;
-        }
-        message += `*Subtotal Item:* ${Cart.formatCurrency(item.unitPrice * item.quantity)}\n---------------------\n`;
-    });
+        if (deliveryOption === 'delivery') {
+            const customerName = document.getElementById('customerName').value.trim();
+            const customerCep = document.getElementById('customerCep').value.trim();
+            const customerAddress = document.getElementById('customerAddress').value.trim();
+            const customerNumber = document.getElementById('customerNumber').value.trim();
 
-    const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
-    
-    // Calcula o total final baseado na opção de entrega
-    const finalTotal = deliveryOption === 'delivery' ? subtotal + deliveryFee : subtotal;
+            if (!customerName || !customerAddress || !customerNumber || !customerCep) {
+                alert('Por favor, preencha todos os dados de entrega: nome, CEP, endereço e número.');
+                return;
+            }
+            
+            const fullAddress = `${customerAddress}, Nº ${customerNumber}`;
+            message += `*MODO DE RECEBIMENTO:* Entrega\n*DADOS DE ENTREGA:*\n*Nome:* ${customerName}\n*Endereço:* ${fullAddress}\n*CEP:* ${customerCep}\n*Pagamento:* ${paymentMethod}\n`;
 
-    message += `\n*Subtotal dos Itens:* ${Cart.formatCurrency(subtotal)}\n`;
+        } else { 
+            const customerNamePickup = document.getElementById('customerNamePickup').value.trim();
+            const customerNumberPickup = document.getElementById('customerNumberPickup').value.trim();
 
-    // Adiciona a linha da taxa de entrega apenas se a opção for 'delivery'
-    if (deliveryOption === 'delivery') {
-        message += `*Taxa de Entrega:* ${Cart.formatCurrency(deliveryFee)}\n`;
-    }
-
-    message += `*TOTAL DO PEDIDO:* *${Cart.formatCurrency(finalTotal)}*\n\n`;
-
-    if (deliveryOption === 'delivery') {
-        const customerCep = document.getElementById('customerCep').value.trim();
-        const customerAddress = document.getElementById('customerAddress').value.trim();
-        const customerNumber = document.getElementById('customerNumber').value.trim();
-        const fullAddress = `${customerAddress}, Nº ${customerNumber}`;
-
-        message += `*MODO DE RECEBIMENTO:* Entrega\n*DADOS DE ENTREGA:*\n*Nome:* ${customerName}\n*Endereço:* ${fullAddress}\n*CEP:* ${customerCep}\n*Pagamento:* ${paymentMethod}\n`;
-    } else {
-        message += `*MODO DE RECEBIMENTO:* Retirada no Balcão\n*PAGAMENTO:* ${paymentMethod}\n`;
-    }
-
-    if (orderNotes) {
-        message += `\n*Observações:* ${orderNotes}\n`;
-    }
-
-    const whatsappNumber = '5511948768272';
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-    checkoutModalInstance.hide();
-}
-
-    // NOVA FUNÇÃO PARA PREENCHIMENTO AUTOMÁTICO DO CEP
-    function setupCepAutofill() {
-        const cepInput = document.getElementById('customerCep');
-        const addressInput = document.getElementById('customerAddress');
-
-        if (!cepInput) return; // Garante que o código não quebre se o elemento não existir
-
-        cepInput.addEventListener('blur', () => {
-            const cep = cepInput.value.replace(/\D/g, '');
-
-            if (cep.length !== 8) {
+            if (!customerNamePickup || !customerNumberPickup) {
+                alert('Por favor, preencha seu nome e número para a retirada.');
                 return;
             }
 
-            addressInput.value = "Buscando endereço...";
+            message += `*MODO DE RECEBIMENTO:* Retirada no Balcão\n*DADOS PARA RETIRADA:*\n*Nome:* ${customerNamePickup}\n*Telefone:* ${customerNumberPickup}\n*PAGAMENTO:* ${paymentMethod}\n`;
+        }
 
+        if (orderNotes) {
+            message += `\n*Observações:* ${orderNotes}\n`;
+        }
+
+        const whatsappNumber = '5511948768272';
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        checkoutModalInstance.hide();
+    }
+
+    function setupCepAutofill() {
+        const cepInput = document.getElementById('customerCep');
+        const addressInput = document.getElementById('customerAddress');
+        if (!cepInput) return;
+        cepInput.addEventListener('blur', () => {
+            const cep = cepInput.value.replace(/\D/g, '');
+            if (cep.length !== 8) return;
+            addressInput.value = "Buscando endereço...";
             fetch(`https://viacep.com.br/ws/${cep}/json/`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.erro) {
                         addressInput.value = "CEP não encontrado.";
                     } else {
-                        addressInput.value = `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+                        addressInput.value = `${data.logouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
                     }
                 })
                 .catch(error => {
@@ -204,11 +196,9 @@ function generateWhatsAppMessage() {
     mainContainer.addEventListener('click', e => {
         const productCard = e.target.closest('.product-card');
         if (!productCard) return;
-
         const productId = productCard.dataset.productId;
         const product = products.find(p => p.id == productId);
         if (!product) return;
-        
         productCard.classList.add('is-shaking');
         setTimeout(() => {
             productCard.classList.remove('is-shaking');
@@ -246,16 +236,19 @@ function generateWhatsAppMessage() {
     generateWhatsAppBtn.addEventListener('click', generateWhatsAppMessage);
     
     deliveryOptionRadios.forEach(radio => {
-    radio.addEventListener('change', (event) => {
-        if (event.target.value === 'delivery') {
-            deliveryForm.classList.remove('hidden');
-            deliveryFeeText.classList.remove('d-none'); // Mostra o texto da taxa
-        } else {
-            deliveryForm.classList.add('hidden');
-            deliveryFeeText.classList.add('d-none'); // Esconde o texto da taxa
-        }
+        radio.addEventListener('change', (event) => {
+            if (event.target.value === 'delivery') {
+                deliveryForm.classList.remove('hidden');
+                pickupForm.classList.add('hidden');
+                deliveryFeeText.classList.remove('d-none');
+            } else {
+                deliveryForm.classList.add('hidden');
+                pickupForm.classList.remove('hidden');
+                deliveryFeeText.classList.add('d-none');
+            }
+        });
     });
-});
+    document.querySelector('input[name="deliveryOption"]:checked').dispatchEvent(new Event('change'));
 
     window.addEventListener('scroll', () => {
         if (categoryTabs && categoryTabs.offsetTop > 0 && window.scrollY >= categoryTabs.offsetTop) {
@@ -267,5 +260,5 @@ function generateWhatsAppMessage() {
 
     // --- EXECUÇÃO INICIAL ---
     renderProducts();
-    setupCepAutofill(); // Ativa a funcionalidade do CEP
+    setupCepAutofill();
 });
